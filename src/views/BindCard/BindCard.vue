@@ -586,14 +586,10 @@ export default {
           this.bindParam.phone = res.data.phone
           this.bindParam.account = res.data.companyName
           this.bindParam.certificationType = res.data.certificationType.toString()
-          // debugger
         }
       })
     },
     getMessageCode () { // 获取验证码
-      // this.bindParam.phone = this.bindParam.phone.split(' ').join('')
-      // console.log(this.bindParam)
-      // debugger
       if (this.bindParam.pbId === '') {
         this.loadingShow = true
         this.AccountBindCard()
@@ -616,7 +612,6 @@ export default {
           this.pbId.pbId = res.data.pb_id
           this.bindParam.pbId = this.pbId.pbId
           this.bindParam.pbCode = this.bindParam.bankCardNumbers
-          console.log(this.bindParam)
         } else {
           this.loadingShow = false
           this.moneyShow = true
@@ -650,8 +645,6 @@ export default {
       this.showConfirm = true
     },
     submitBindCard () { // 资金账户绑卡账户鉴权请求
-      // console.log(this.bindParam)
-      // debugger
       RegisterLogisticsPayAndBindingCard.FundAccountAccountAuth(this.bindParam).then(res => {
         if (res.code === 200) {
           this.$router.push({name: 'Treasure', query: {from: 'bindCardSuccess'}})

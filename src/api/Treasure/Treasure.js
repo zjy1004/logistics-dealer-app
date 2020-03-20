@@ -20,6 +20,11 @@ const TreasureAjax = {
     // 处理可提现接口
     let result = Get('/finance/api/withdrawRestController/dealCanWithdraw', params)
     return result
+  },
+  QueryNewWalletStatus (params) {
+    // 查询用户绑卡状态接口
+    let result = Get('/finance/funds/queryNewWalletStatus', params)
+    return result
   }
 }
 

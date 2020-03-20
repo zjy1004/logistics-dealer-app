@@ -15,7 +15,10 @@ import vFilters from './tools/vFilters'
 import animated from 'animate.css'
 // import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
+import { Dialog, ImagePreview } from 'vant'
 
+Vue.use(Dialog)
+Vue.use(ImagePreview)
 Vue.use(baseFn)
 Vue.use(ToastPlugin)
 Vue.use(Cell)

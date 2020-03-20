@@ -1,29 +1,46 @@
 <template>
   <div class="footer">
-      <div class="footer-item" @click="gotoTreasure" :class="{active: $route.name === 'Treasure'}">
-          <i class="iconfont icon-wodecaifu"></i>
-        <div class="footer-title">财富</div>
-      </div>
-      <router-link to="/waybill" class="footer-item" :class="{active: $route.name === 'Waybill' || $route.name === 'Index'}">
-        <i class="iconfont icon-dingdan2"></i>
-        <div class="footer-title">运单</div>
-      </router-link>
-      <router-link to="/mine" class="footer-item" :class="{active: $route.name === 'Mine'}">
-        <i class="iconfont icon-wode1"></i>
-        <div class="footer-title">我的</div>
-      </router-link>
+    <div class="footer-item" @click="gotoTreasure()" :class="{active: $route.name === 'Treasure'}" v-if="!isRepairShop">
+        <i class="iconfont icon-wodecaifu"></i>
+      <div class="footer-title">财富</div>
     </div>
+    <!-- <router-link class="footer-item" :class="{active: $route.name === 'Treasure'}" @click.native="gotoTreasure" v-if="!isRepairShop">
+      <i class="iconfont icon-wodecaifu"></i>
+      <div class="footer-title">财富</div>
+    </router-link> -->
+    <router-link to="/waybill" class="footer-item" :class="{active: $route.name === 'Waybill' || $route.name === 'Index'}" v-if="!isRepairShop">
+      <i class="iconfont icon-dingdan2"></i>
+      <div class="footer-title">运单</div>
+    </router-link>
+    <router-link to="/repairShopWaybillList" class="footer-item" :class="{active: $route.name === 'RepairShopWaybillList'}" v-if="isRepairShop">
+      <i class="iconfont icon-dingdan2"></i>
+      <div class="footer-title">运单</div>
+    </router-link>
+    <router-link to="/mine" class="footer-item" :class="{active: $route.name === 'Mine'}">
+      <i class="iconfont icon-wode1"></i>
+      <div class="footer-title">我的</div>
+    </router-link>
+  </div>
 </template>
 
 <script type="text/ecmascript-6">
 import LoginAjax from '@/api/Login/Login'
 
 export default {
-  name: '',
+  name: 'FooterBar',
   data () {
-    return {}
+    return {
+      isRepairShop: false
+    }
   },
-  components: {},
+  created () {
+    let companyType = JSON.parse(sessionStorage.getItem('userInfo')).companyType
+    if (companyType === 6) {
+      this.isRepairShop = true
+    } else {
+      this.isRepairShop = false
+    }
+  },
   methods: {
     gotoTreasure () {
       LoginAjax.QueryUserState().then((res) => {

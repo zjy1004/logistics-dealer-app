@@ -68,24 +68,26 @@
           <h3>开单日期</h3>
           <div class="dateWrap">
             <div class="dateLi">
-              <datetime
+              <!-- <datetime
                 v-model="flowCollectionGoodsIncomeParam.createTimeStart"
                 placeholder="开始时间"
                 @on-change="changeDate"
                 @on-cancel="log('cancel')"
                 @on-confirm="onConfirm"
                 @on-hide="log('hide', $event)">
-              </datetime>
+              </datetime> -->
+              <calendar title="" @on-hide="calendarHide" show-popup-header :popup-header-title="'请选择'" class="calendar-con" placeholder="开始时间" v-model="flowCollectionGoodsIncomeParam.createTimeStart"></calendar>
             </div>
             <div class="dateLi">
-              <datetime
+              <!-- <datetime
                 v-model="flowCollectionGoodsIncomeParam.createTimeEnd"
                 placeholder="结束时间"
                 @on-change="changeDate"
                 @on-cancel="log('cancel')"
                 @on-confirm="onConfirm"
                 @on-hide="log('hide', $event)">
-              </datetime>
+              </datetime> -->
+              <calendar title="" @on-hide="calendarHide" show-popup-header :popup-header-title="'请选择'" class="calendar-con" placeholder="结束时间" v-model="flowCollectionGoodsIncomeParam.createTimeEnd"></calendar>
             </div>
           </div>
         </div>
@@ -100,7 +102,7 @@
 
 <script type="text/ecmascript-6">
 import TreasureAjax from '@/api/Treasure/Treasure'
-import { Checker, CheckerItem, Popup, Flexbox, FlexboxItem, TransferDom, Datetime, XInput } from 'vux'
+import { Checker, CheckerItem, Popup, Flexbox, FlexboxItem, TransferDom, Datetime, XInput, Calendar } from 'vux'
 import { PullRefresh } from 'vant'
 import { setTimeout } from 'timers'
 export default {
@@ -114,7 +116,8 @@ export default {
     FlexboxItem,
     TransferDom,
     Datetime,
-    XInput
+    XInput,
+    Calendar
   },
   directives: {
     TransferDom
@@ -158,11 +161,18 @@ export default {
       this.$nextTick(() => {
         setTimeout(() => {
           let modal = document.getElementsByClassName('vux-popup-mask')[0]
-          modal.style.zIndex = 999
+          modal.style.zIndex = 498
         }, 400)
       })
-      // modal.style.
       this.selectShow = false
+    },
+    calendarHide () {
+      this.$nextTick(() => {
+        setTimeout(() => {
+          let modal = document.getElementsByClassName('vux-popup-mask')[0]
+          modal.style.zIndex = 498
+        }, 400)
+      })
     },
     // 修改时间
     changeDate () {
@@ -269,7 +279,12 @@ export default {
   width: 80% !important;
   background: #FFF;
   overflow: inherit;
-  z-index: 1000
+  z-index: 499;
+}
+.vux-calendar{
+  .weui-cell__ft{
+    text-align: center;
+  }
 }
 .collectRecord {
   height: 100%;
@@ -351,16 +366,16 @@ export default {
     .van-pull-refresh {
       height: 100%;
       overflow: auto;
-     /deep/ .van-pull-refresh__track {
+      /deep/ .van-pull-refresh__track {
         height: 100%;
       }
     }
     /deep/ .van-pull-refresh__text {
-        font-size: 28px;
-      }
+      font-size: 28px;
+    }
     /deep/ .van-pull-refresh__loading span{
-        font-size: 28px;
-      }
+      font-size: 28px;
+    }
     .c-record {
       width: 100%;
       height: 100%;
@@ -581,7 +596,7 @@ export default {
     }
   .scroller-component {
     .scroller-indicator {
-      height: 50px !important;
+      height: 50px !important;;
       border-top: 1px solid #E8E8E8;
       border-bottom: 1px solid #E8E8E8;
     }

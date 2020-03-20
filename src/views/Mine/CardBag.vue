@@ -54,6 +54,16 @@
         <p style="text-align:center;">该账户存在银行卡正在进行身份认证是否继续进行认证</p>
       </confirm>
     </div>
+    <div v-transfer-dom>
+      <confirm v-model="showAccountUpdate"
+        :confirm-text="'确定'"
+        :cancel-text="''"
+        :show-cancel-button = false
+        @on-cancel="showAccountUpdate = false"
+        @on-confirm="onConfirmUpdate = false">
+        <p style="text-align:center;">为保证账户安全系统，账户升级前的运单未提现完成前，无法进行更换银行卡操作</p>
+      </confirm>
+    </div>
   </div>
 </template>
 
@@ -65,12 +75,14 @@ export default {
   name: 'CardBag',
   data () {
     return {
+      shouldUpdate: false,
       showAuthConfirm: false,
       registerStatus: 3,
       haveCard: '',
       authStatus: '',
       showChangeCard: false,
       showRegister: false,
+      showAccountUpdate: false,
       bankCard: '', // 银行卡号
       bankName: '', // 银行开户行
       pbId: {
@@ -89,6 +101,7 @@ export default {
   created () {
     this.queryBankInfo()
     this.getUserInfo()
+    this.queryCardStatus()
   },
   methods: {
     getUserInfo () {
@@ -144,10 +157,28 @@ export default {
       })
     },
     changeCard () { // 解绑弹框
-      this.showChangeCard = true
+      if (this.shouldUpdate) {
+        this.showAccountUpdate = true
+      } else {
+        this.showChangeCard = true
+      }
     },
     onConfirmChangeCard () { // 确认解绑
       this.unBindCard()
+    },
+    onConfirmUpdate () {
+      this.$router.push({name: 'Treasure'})
+    },
+    queryCardStatus () {
+      CommonAxios.QueryCardStatus().then(res => {
+        if (res.code === 200) {
+          if (res.data) {
+            this.shouldUpdate = false
+          } else {
+            this.shouldUpdate = true
+          }
+        }
+      })
     },
     unBindCard () { // 解绑请求
       CommonAxios.FundAccountUnBindBankCard(this.pbId).then(response => {

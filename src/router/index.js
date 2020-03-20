@@ -8,6 +8,9 @@ import StatePage from '@/components/StatePage/StatePage'
 import CashWithdrawalDetail from '@/views/CashWithdrawal/CashWithdrawalDetail'
 import RecordOfTotalWithdrawalAmount from '@/views/CashWithdrawal/RecordOfTotalWithdrawalAmount'
 import RecordOfTotalCollectingGoods from '@/views/CashWithdrawal/RecordOfTotalCollectingGoods'
+import RepairShopWaybillList from '@/views/RepairShopWaybill/RepairShopWaybillList'
+import RepairShopWaybillDetail from '@/views/RepairShopWaybill/RepairShopWaybillDetail'
+import ChooseCustomers from '@/views/CreateWaybill/ChooseCustomers'
 
 Vue.use(Router)
 
@@ -20,7 +23,7 @@ export default new Router({
     },
     {
       path: '/index',
-      redirect: '/waybill',
+      // redirect: '/waybill',
       name: 'Index',
       component: () => import('@/views/Index/Index')
     },
@@ -33,6 +36,16 @@ export default new Router({
       path: '/tuoPayRegister',
       name: 'TuoPayRegister',
       component: () => import('@/views/TuoPayRegister/TuoPayRegister')
+    },
+    {
+      path: '/registerUser',
+      name: 'RegisterUser',
+      component: () => import('@/views/Login/RegisterUser')
+    },
+    {
+      path: '/searchRegisterLogistics',
+      name: 'SearchRegisterLogistics',
+      component: () => import('@/views/Login/SearchRegisterLogistics')
     },
     {
       path: '/bindCard',
@@ -95,6 +108,21 @@ export default new Router({
       component: () => import('@/views/Mine/CardBag')
     },
     {
+      path: '/dealerUserInfo',
+      name: 'DealerUserInfo',
+      component: () => import('@/views/Mine/DealerUserInfo')
+    },
+    {
+      path: '/searchLogistics',
+      name: 'SearchLogistics',
+      component: () => import('@/views/Mine/subpage/SearchLogistics')
+    },
+    {
+      path: '/createClient',
+      name: 'CreateClient',
+      component: () => import('@/views/CreateWaybill/CreateClient')
+    },
+    {
       path: '/userInfo',
       name: 'UserInfo',
       component: UserInfo
@@ -128,6 +156,36 @@ export default new Router({
       path: '/recordOfTotalCollectingGoods',
       name: 'RecordOfTotalCollectingGoods',
       component: RecordOfTotalCollectingGoods
+    },
+    {
+      path: '/repairShopWaybillList',
+      name: 'RepairShopWaybillList',
+      component: RepairShopWaybillList
+    },
+    {
+      path: '/repairShopWaybillDetail',
+      name: 'RepairShopWaybillDetail',
+      component: RepairShopWaybillDetail
+    },
+    {
+      path: '/createWaybill',
+      name: 'CreateWaybill',
+      component: () => import('@/views/CreateWaybill/CreateWaybill')
+    },
+    {
+      path: '/chooseCustomers',
+      name: 'ChooseCustomers',
+      component: ChooseCustomers
+    },
+    {
+      path: '/inviteCode',
+      name: 'InviteCode',
+      component: () => import('@/views/Mine/InviteCode')
+    },
+    {
+      path: '/registerInfo',
+      name: 'RegisterInfo',
+      component: () => import('@/views/Login/RegisterInfo')
     }
   ]
 })

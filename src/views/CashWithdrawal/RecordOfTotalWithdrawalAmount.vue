@@ -100,20 +100,22 @@
             <flexbox>
               <flexbox-item>
                 <div class="flex-demo flexRight">
-                  <datetime
+                  <!-- <datetime
                   v-model="flowDealerWithdrawCashParam.bankPaymentTimeStart"
                   placeholder="开始时间 "
                   @on-cancel="log('cancel')"
-                  @on-hide="log('hide', $event)"></datetime>
+                  @on-hide="log('hide', $event)"></datetime> -->
+                  <calendar title="" @on-hide="calendarHide" show-popup-header :popup-header-title="'请选择'" class="calendar-con" placeholder="开始时间" v-model="flowDealerWithdrawCashParam.bankPaymentTimeStart"></calendar>
                 </div>
               </flexbox-item>
               <flexbox-item>
                 <div class="flex-demo flexLeft">
-                  <datetime
+                  <!-- <datetime
                   v-model="flowDealerWithdrawCashParam.bankPaymentTimeEnd"
                   placeholder="结束时间"
                   @on-cancel="log('cancel')"
-                  @on-hide="log('hide', $event)"></datetime>
+                  @on-hide="log('hide', $event)"></datetime> -->
+                  <calendar title="" @on-hide="calendarHide" show-popup-header :popup-header-title="'请选择'" class="calendar-con" placeholder="结束时间" v-model="flowDealerWithdrawCashParam.bankPaymentTimeEnd"></calendar>
                 </div>
                 </flexbox-item>
             </flexbox>
@@ -133,10 +135,10 @@
 import { PullRefresh } from 'vant'
 import FooterBar from '@/components/FooterBar/FooterBar'
 import TreasureAjax from '@/api/Treasure/Treasure'
-import { Checker, CheckerItem, Popup, TransferDom, Flexbox, FlexboxItem, Datetime } from 'vux'
+import { Checker, CheckerItem, Popup, TransferDom, Flexbox, FlexboxItem, Datetime, Calendar } from 'vux'
 export default {
   name: 'RecordOfTotalWithdrawalAmount',
-  components: { FooterBar, Checker, CheckerItem, Popup, Flexbox, FlexboxItem, Datetime, [PullRefresh.name]: PullRefresh
+  components: { FooterBar, Checker, CheckerItem, Popup, Flexbox, FlexboxItem, Datetime, [PullRefresh.name]: PullRefresh, Calendar
   },
   directives: {
     TransferDom
@@ -167,10 +169,18 @@ export default {
       this.$nextTick(() => {
         setTimeout(() => {
           let modal = document.getElementsByClassName('vux-popup-mask')[0]
-          modal.style.zIndex = 999
+          modal.style.zIndex = 498
         }, 400)
       })
       this.selectShow = false
+    },
+    calendarHide () {
+      this.$nextTick(() => {
+        setTimeout(() => {
+          let modal = document.getElementsByClassName('vux-popup-mask')[0]
+          modal.style.zIndex = 498
+        }, 400)
+      })
     },
     // 下拉刷新
     waybillRefresh () {
@@ -499,7 +509,12 @@ export default {
   width: 80% !important;
   background: #FFF;
   overflow: inherit;
-  z-index: 1000;
+  z-index: 499;
+}
+.vux-calendar{
+  .weui-cell__ft{
+    text-align: center;
+  }
 }
 .flex-demo {
   text-align: center;

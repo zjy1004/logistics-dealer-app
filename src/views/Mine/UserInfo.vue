@@ -11,19 +11,23 @@
       <cell title="登录账号" :value="userInfo.account"></cell>
     </group>
     <group label-width="112px">
-      <cell title="经销商公司" :value="userInfo.dealerName"></cell>
+      <cell title="所属公司" :value="userInfo.dealerName"></cell>
       <cell title="经营地址" :value="userInfo.address"></cell>
     </group>
+    <qrcode class="codeCon" v-if="showCode" :value="platformCode.toString()"></qrcode>
   </div>
 </template>
 
 <script>
-import { XHeader, Group, Cell } from 'vux'
+import { XHeader, Group, Cell, Qrcode } from 'vux'
 import MyCenterAjax from '@/api/MyCenter/MyCenter'
 export default {
   name: 'UserInfo',
   data () {
     return {
+      showCode: false,
+      clientId: '',
+      platformCode: '',
       userInfo: {
         userName: '', // 姓名
         phone: '', // 联系电话
@@ -36,9 +40,15 @@ export default {
   components: {
     XHeader,
     Cell,
-    Group
+    Group,
+    Qrcode
   },
   created () {
+    if (this.$route.query && this.$route.query.type) {
+      this.showCode = true
+    } else {
+      this.showCode = false
+    }
     this.queryDetail()
   },
   methods: {
@@ -47,9 +57,14 @@ export default {
       this.userInfo.userName = userInfoObj.userName
       this.userInfo.phone = userInfoObj.phone
       this.userInfo.account = userInfoObj.account
-      let clientId = userInfoObj.clientId
-      MyCenterAjax.queryInfo({clientId}).then((response) => {
+      MyCenterAjax.queryInfo().then((response) => {
         if (response.code === 200) {
+          if (response.data.platformCode !== '' && response.data.platformCode !== null) {
+            this.platformCode = response.data.platformCode
+          } else {
+            this.platformCode = ''
+          }
+          this.clientId = response.data.clientId
           this.userInfo.dealerName = response.data.clientName || ''
           this.userInfo.address = response.data.address || ''
         }
@@ -108,5 +123,11 @@ export default {
 .user-info{
   height: 100%;
   width: 100%;
+  .codeCon{
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 </style>

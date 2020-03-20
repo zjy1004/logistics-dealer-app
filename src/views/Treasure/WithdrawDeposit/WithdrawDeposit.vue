@@ -46,10 +46,10 @@
                       :value.sync="boxItem.check"
                     ></check-icon>
                     <div class="right">
-                      <div class="right-receive-name">
+                      <div class="right-receive-name" :class="{'active': Number(boxItem.walletFlag) === 1}">
                         <span>{{boxItem.receiveClientName}}</span>
                       </div>
-                      <div class="right-waybill-num">
+                      <div class="right-waybill-num" :class="{'active': Number(boxItem.walletFlag) === 1}">
                         <span class="waybillNum">{{boxItem.waybillNumber}}</span>
                       </div>
                       <div class="right-money">
@@ -133,23 +133,25 @@
             <flexbox>
               <flexbox-item>
                 <div class="flex-demo flexRight">
-                  <datetime
+                  <!-- <datetime
                     placeholder='开始时间'
                     v-model="queryParam.createTimeStart"
                     @on-cancel="log('cancel')"
                     @on-hide="log('hide', $event)">
-                  </datetime>
+                  </datetime> -->
+                  <calendar title="" @on-hide="calendarHide" show-popup-header :popup-header-title="'请选择'" class="calendar-con" placeholder="开始时间" v-model="queryParam.createTimeStart"></calendar>
                 </div>
               </flexbox-item>
 
               <flexbox-item>
                 <div class="flex-demo flexLeft">
-                  <datetime
+                  <!-- <datetime
                     placeholder='结束时间'
                     v-model="queryParam.createTimeEnd"
                     @on-cancel="log('cancel')"
                     @on-hide="log('hide', $event)">
-                  </datetime>
+                  </datetime> -->
+                  <calendar title="" @on-hide="calendarHide" show-popup-header :popup-header-title="'请选择'" class="calendar-con" placeholder="结束时间" v-model="queryParam.createTimeEnd"></calendar>
                 </div>
               </flexbox-item>
             </flexbox>
@@ -205,7 +207,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { XHeader, XButton, Popup, Flexbox, FlexboxItem, Search, CheckIcon, TransferDom, Datetime, XInput, Confirm } from 'vux'
+import { XHeader, XButton, Popup, Flexbox, FlexboxItem, Search, CheckIcon, TransferDom, Datetime, XInput, Confirm, Calendar } from 'vux'
 // import { getDay } from '@/tools/tools'
 import { PullRefresh } from 'vant'
 import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
@@ -252,7 +254,8 @@ export default {
     Datetime,
     XInput,
     Confirm,
-    [PullRefresh.name]: PullRefresh
+    [PullRefresh.name]: PullRefresh,
+    Calendar
   },
   directives: {
     TransferDom
@@ -300,7 +303,7 @@ export default {
       CommonAxios.WalletBankAccount().then(response => {
         if (response.code === 200) {
           let {data} = response
-          this.totalAmount = data.totalTranOutAmount || 0
+          this.totalAmount = data.financeAccountCash || 0
           this.title = `可提现余额:￥${this.totalAmount}`
         }
       })
@@ -333,6 +336,20 @@ export default {
     },
     choose () {
       this.showPop = true
+      this.$nextTick(() => {
+        setTimeout(() => {
+          let modal = document.getElementsByClassName('vux-popup-mask')[0]
+          modal.style.zIndex = 498
+        }, 400)
+      })
+    },
+    calendarHide () {
+      this.$nextTick(() => {
+        setTimeout(() => {
+          let modal = document.getElementsByClassName('vux-popup-mask')[0]
+          modal.style.zIndex = 498
+        }, 400)
+      })
     },
     // 重置筛选
     reset () {
@@ -456,6 +473,7 @@ export default {
     display: flex;
     flex: 1;
     background: #f3f4f5;
+    overflow: auto;
     .van-pull-refresh {
       height: 100%;
       overflow: auto;
@@ -479,6 +497,7 @@ export default {
     .receiveMon {
       display: flex;
       flex: 1;
+      height: 100%;
       flex-direction: column;
       overflow: hidden;
       .top-tip{
@@ -668,6 +687,11 @@ export default {
                 font-size: 26px;
                 span{
                   color: #5C6066;
+                }
+              }
+              .active {
+                span {
+                   color: #f00;
                 }
               }
               .right-money {
@@ -930,6 +954,12 @@ export default {
   width: 80% !important;
   background: #FFF;
   overflow: inherit;
+  z-index: 499;
+}
+.vux-calendar{
+  .weui-cell__ft{
+    text-align: center;
+  }
 }
 .popupRight {
   .withdraw-deposit-pop{

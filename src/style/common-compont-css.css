@@ -66,14 +66,14 @@
 }
 .weui-dialog .weui-dialog__bd{
   width: 100%;
-  height: 200px;
+  height: 250px;
   padding: 0px 90px!important;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 .weui-dialog .weui-dialog__bd p{
-  font-size: 34px;
+  font-size: 32px;
   color: #101010;
 }
 .weui-dialog .weui-dialog__ft{
@@ -196,4 +196,72 @@
   height: 30px;
   background: url(../image/refresh.png) no-repeat;
   background-size: 100% 100%;
+}
+
+/* dialog */
+.van-dialog {
+  height: 240px;
+}
+.van-dialog__header--isolated {
+  padding: 50px 0;
+  font-size: 32px;
+  border-bottom: 1px solid #F7F9FC;
+}
+.van-dialog__footer--buttons {
+  height: 100px;;
+}
+.van-dialog .van-button {
+  height: 100px;
+  line-height: 100px;
+  font-size: 26px;
+}
+.van-dialog .van-button span {
+  font-size: 30px;
+}
+
+/* 日历底部弹框 */
+.vux-popup-dialog.vux-popup-bottom.vux-popup-show{
+  z-index: 1001;
+}
+.vux-calendar:before{
+  border-top: none!important;
+}
+.inline-calendar .calendar-header{
+  -height: 60px;
+}
+.inline-calendar .calendar-header .calendar-year, .calendar-month{
+  -height: 100%;
+}
+.inline-calendar .calendar-header .vux-prev-icon{
+  width: 20px;
+  height: 20px;
+  left: 25px;
+}
+.inline-calendar .calendar-header .vux-next-icon{
+  width: 20px;
+  height: 20px;
+  right: 25px;
+}
+.inline-calendar .calendar-title{
+  line-height: 60px;
+  font-size: 28px;
+}
+.inline-calendar table thead tr th{
+  height: 40px;
+  line-height: 40px;
+  font-size: 28px;
+}
+.inline-calendar tbody tr td{
+  height: 40px;
+  line-height: 40px;
+}
+.inline-calendar tbody tr td span{
+  width: 40px!important;
+  height: 40px!important;
+  line-height: 40px!important;
+  font-size: 28px;
+}
+
+.van-icon-clear {
+  font-size: 28px;
 }

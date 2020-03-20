@@ -4,35 +4,33 @@
          我的
       </div>
      <div class="content">
-       <!-- <div class="c-user">
-         <ul @click="routeLink('UserInfo')" class="c-u-wrap">
-           <li class="user-icon">
-           </li>
-            <li class="user-name">
-              <div class="title">用户名称</div>
-              <div class="name">{{userInfo.userName}}</div>
-            </li>
-            <li class="user-arrow">
-              <i class="iconfont icon-zuanshi"></i>
-            </li>
-         </ul>
-       </div> -->
        <div class="c-user1">
           <div class="user-con"></div>
           <div class="user-info-con">
             <div class="user-name-label">用户名称</div>
             <div class="user-name">{{userInfo.userName}}</div>
           </div>
-          <div class="my-info" @click="routeLink('UserInfo')">
+          <div class="my-info" @click="routeLink('DealerUserInfo')" v-if="!isRepairShop && businessModel">
+            <div class="icon-image"></div>
+            <div class="my-label">我的资料</div>
+          </div>
+          <div class="my-info" @click="routeLink('UserInfo')" v-if="isRepairShop || !businessModel">
             <div class="icon-image"></div>
             <div class="my-label">我的资料</div>
           </div>
         </div>
        <div class="c-menu">
-         <div class="li" @click="routeLink('CardBag')">
+         <div class="li" @click="routeLink('CardBag')" v-if="!isRepairShop">
           <div class="c-m-left">
              <div class="icon"><i class="iconfont icon-yinxingqia002"></i></div>
              <div class="title">我的卡包</div>
+           </div>
+          <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
+        </div>
+        <div v-if="false" class="li" @click="routeLink('InviteCode')">
+          <div class="c-m-left">
+             <div class="icon"><i class="iconfont icon-yaoqingmatianchong"></i></div>
+             <div class="title">邀请码</div>
            </div>
           <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
         </div>
@@ -66,6 +64,12 @@
            </div>
            <div class="c-m-right"><i class="iconfont icon-youjiantoushixinxiao"></i></div>
          </div>
+         <div class="li" v-if="false">
+          <div v-if="startTime && endTime" class="c-m-left last">
+             <div class="icon"><i class="iconfont icon-youhuiquan"></i></div>
+             <div class="title">优惠日期：{{startTime}}至{{endTime}}</div>
+           </div>
+        </div>
        </div>
      </div>
      <div v-transfer-dom>
@@ -88,11 +92,14 @@
 <script type="text/ecmascript-6">
 import { TransferDom, Confirm } from 'vux'
 import FooterBar from '@/components/FooterBar/FooterBar'
+// import CommonAxios from '@/api/Common/CommonAxios'
 export default {
   name: 'Mine',
   components: { FooterBar, Confirm },
   data () {
     return {
+      isRepairShop: false,
+      businessModel: false,
       isIos: true,
       showService: false,
       telNum: '4000088122',
@@ -103,6 +110,8 @@ export default {
         logisticsName: '', // 物流公司名称
         stationName: '' // 所属站点
       }
+      // startTime: '',
+      // endTime: ''
     }
   },
   directives: {
@@ -113,16 +122,48 @@ export default {
     if (phoneType !== 'iPhone') {
       this.isIos = false
     }
+    let companyType = JSON.parse(sessionStorage.getItem('userInfo')).companyType
+    if (companyType === 6) { // 修理厂6  经销商2
+      this.isRepairShop = true
+    } else {
+      this.isRepairShop = false
+    }
+    let businessModel = JSON.parse(sessionStorage.getItem('userInfo')).businessModel
+    if (businessModel === 2) {
+      this.businessModel = true
+    } else {
+      this.businessModel = false
+    }
     this.queryDetail()
+    // this.queryDiscountsTime()
   },
   methods: {
     routeLink (name) {
-      this.$router.push({name})
+      if (name === 'UserInfo') {
+        let companyType = JSON.parse(sessionStorage.getItem('userInfo')).companyType
+        if (companyType === 2) { // 修理厂6  经销商2
+          this.$router.push({name, query: {type: 2}})
+        } else {
+          this.$router.push({name})
+        }
+      } else {
+        this.$router.push({name})
+      }
     },
     queryDetail () {
       let userInfoObj = JSON.parse(sessionStorage.getItem('userInfo'))
       this.userInfo = {...userInfoObj}
     },
+    // queryDiscountsTime () {
+    //   let userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
+    //   CommonAxios.QueryLimitedPromotionTime({clientId: userInfo.clientId}).then(res => {
+    //     if (res.code === 200) {
+    //       let {startTime, endTime} = res.data
+    //       this.startTime = startTime
+    //       this.endTime = endTime
+    //     }
+    //   })
+    // },
     onConfirm () {
       this.showService = false
     },
@@ -340,6 +381,13 @@ export default {
           font-size: 30px;
           line-height: 80px;
           color: #24282E;
+        }
+      }
+      .c-m-left.last{
+        width: 100%;
+        .title{
+          padding-left: 20px;
+          flex: 1;
         }
       }
       .c-m-right {

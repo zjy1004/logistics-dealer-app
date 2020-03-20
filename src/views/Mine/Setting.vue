@@ -44,6 +44,7 @@
 
 <script>
 import { XHeader, Group, Cell, Confirm, TransferDomDirective as TransferDom } from 'vux'
+import LoginAjax from '@/api/Login/Login'
 export default {
   name: 'Setting',
   data () {
@@ -93,8 +94,22 @@ export default {
     logOut () {
       sessionStorage.removeItem('token')
       sessionStorage.removeItem('userInfo')
-      sessionStorage.removeItem('driverInfo')
+      // sessionStorage.removeItem('driverInfo')
+      if (this.getPhoneTypeStr() === 'Android') {
+        if (window.android && window.android.setXXX) {
+          window.android.setXXX('account', '')
+          window.android.setXXX('password', '')
+        }
+      } else { // ios
+        if (window.iOSApp) {
+          window.iOSApp.setUserAccount('')
+          window.iOSApp.setUserPassword('')
+        }
+      }
       this.$router.push({name: 'Login'})
+      LoginAjax.Logout().then(res => {
+        if (res.code === 200) {}
+      })
     }
   }
 }

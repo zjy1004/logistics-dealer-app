@@ -21,6 +21,7 @@ export default {
   name: '',
   data () {
     return {
+      isRepairShop: false,
       form: {
         oldPass: '123456',
         newPass: ''
@@ -29,6 +30,14 @@ export default {
     }
   },
   components: {},
+  created () {
+    let companyType = JSON.parse(sessionStorage.getItem('userInfo')).companyType
+    if (companyType === 6) {
+      this.isRepairShop = true
+    } else {
+      this.isRepairShop = false
+    }
+  },
   methods: {
     confirm () {
       if (this.form.newPass === '') {
@@ -56,9 +65,11 @@ export default {
                 type: 'success',
                 text: '修改成功'
               })
-              setTimeout(() => {
-                this.$router.push({name: 'Index'})
-              }, 500)
+              if (this.isRepairShop) {
+                this.$router.push({name: 'Index', query: {showPage: 4}})
+              } else {
+                this.$router.push({name: 'Index', query: {showPage: 2}})
+              }
             }
           })
         }

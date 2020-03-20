@@ -20,6 +20,11 @@ baseFn.install = function (Vue, options) {
     let d = dd.getDate().toString().padStart(2, '0')
     return y + '-' + m + '-' + d
   }
+  // 校验纯数字（不包含小数点及负号）
+  Vue.prototype.validateOnlyNum = function (megOptions) {
+    megOptions = megOptions.replace(/[^\d]/g, '')
+    return megOptions
+  }
   // 获取手机型号
   Vue.prototype.getPhoneInfo = function () {
     let app = navigator.appVersion
@@ -52,6 +57,22 @@ baseFn.install = function (Vue, options) {
       console.log('访问设备' + Str[0] + '系统版本' + Str[1].substring(4, 12))
       return 'iPad'
     }
+  }
+  Vue.prototype.getPhoneTypeStr = function () {
+    let typeStr = ''
+    let app = navigator.appVersion
+    // 根据括号进行分割
+    let left = app.indexOf('(')
+    let right = app.indexOf(')')
+    let str = app.substring(left + 1, right)
+    // console.log(str+'裁剪过后的')
+    let Str = str.split(';')
+    Str.forEach(item => {
+      if (item.includes('Android')) {
+        typeStr = 'Android'
+      }
+    })
+    return typeStr
   }
   // 银行卡加密格式化
   Vue.prototype.fomatBankNum = function (megOptions) {
@@ -226,6 +247,22 @@ baseFn.install = function (Vue, options) {
       out += String.fromCharCode(((c3 & 0x03) << 6) | c4)
     }
     return out
+  }
+  Vue.prototype.validDuringDay = function (createTimeStart, createTimeEnd, dayLength) {
+    let startTime = new Date(createTimeStart).getTime()
+    let endTime = new Date(createTimeEnd).getTime()
+    let duringTime = dayLength * 24 * 60 * 60 * 1000
+    return (endTime - startTime) <= duringTime
+  }
+  Vue.prototype.encryptPhoneNumber = function (phoneNumber) {
+    if (!phoneNumber) {
+      return ''
+    } else if (phoneNumber.length > 8) {
+      return `${phoneNumber.substring(0, phoneNumber.length - 8)}****${phoneNumber.substring(phoneNumber.length - 4)}`
+    } else {
+      let stars = '*'.repeat(phoneNumber.length - 4)
+      return `${stars}${phoneNumber.substring(phoneNumber.length - 4)}`
+    }
   }
 }
 export { baseFn }

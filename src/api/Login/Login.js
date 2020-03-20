@@ -15,6 +15,11 @@ const LoginAjax = {
     // 用户开通状态查询
     let result = Get('finance/register/queryFundAccountRegisterStatus', params)
     return result
+  },
+  Logout (params) {
+    // 退出登录
+    let result = Get('/crm/auth/logout', params)
+    return result
   }
 }
 

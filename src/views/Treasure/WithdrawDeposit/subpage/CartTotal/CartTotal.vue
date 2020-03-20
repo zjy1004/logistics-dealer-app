@@ -16,10 +16,10 @@
               <ul>
                 <li :key="index" v-for="(boxItem, index) in item.clientAccountList">
                   <div class="right">
-                    <div class="right-receive-name">
+                    <div class="right-receive-name" :class="{'active': Number(boxItem.walletFlag) === 1}">
                       <span>{{boxItem.receiveClientName}}</span>
                     </div>
-                    <div class="right-waybill-num">
+                    <div class="right-waybill-num" :class="{'active': Number(boxItem.walletFlag) === 1}">
                       <span class="waybillNum">{{boxItem.waybillNumber}}</span>
                     </div>
                     <div class="right-money">
@@ -191,6 +191,7 @@ export default {
     display: flex;
     flex: 1;
     background: #f3f4f5;
+    overflow: auto;
   }
   button {
     margin: 0;
@@ -276,6 +277,11 @@ export default {
             font-size: 26px;
             span{
               color: #5C6066;
+            }
+          }
+          .active {
+            span {
+                color: #f00;
             }
           }
           .right-money {

@@ -27,10 +27,20 @@ export default {
         this.tipText = '糟糕！当前服务器页面故障！'
       }
     }
+    let companyType = JSON.parse(sessionStorage.getItem('userInfo')).companyType
+    if (companyType === 6) {
+      this.isRepairShop = true
+    } else {
+      this.isRepairShop = false
+    }
   },
   methods: {
     goHome (e) {
-      this.$router.push({path: '/index'})
+      if (this.isRepairShop) {
+        this.$router.push({name: 'Index', query: {showPage: 4}})
+      } else {
+        this.$router.push({name: 'Index', query: {showPage: 2}})
+      }
     }
   }
 }

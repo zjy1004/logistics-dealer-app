@@ -11,9 +11,12 @@
         <input type="password" v-model="form.password" placeholder="请输入密码">
         <div class="password-icon"></div>
       </div>
-      <div class="remeber-con">
-        <input type="checkbox" v-model="form.remeberPass" @change="remeberChange(form.remeberPass)"/><span>记住密码</span>
-      </div>
+      <!-- <div class="remeber-con">
+        <input type="checkbox" v-model="form.remeberPass"/><span>记住密码</span>
+      </div> -->
+      <!-- <div class="register-con">
+        <div class="register-user" @click="toRegisterUser()">注册新用户</div>
+      </div> -->
       <div class="agreeTerms" @click="agreeTerms">登录表示同意<span>《平台网站注册服务协议》</span></div>
     </div>
     <div class="submit-con1">
@@ -32,15 +35,51 @@
 <script>
 import { Group, XInput, XButton } from 'vux'
 import LoginAjax from '@/api/Login/Login'
-import MyCenterAjax from '@/api/MyCenter/MyCenter'
+// import MyCenterAjax from '@/api/MyCenter/MyCenter'
+import { setTimeout } from 'timers'
+// 安卓和ios获取缓存信息回调函数
+window.setXXXaccount = (account) => {
+  if (account !== 'null' && account !== null) {
+    page.form.account = account
+  }
+  if (page.form.password !== '') {
+    page.login()
+  }
+}
+window.setXXXpassword = (password) => {
+  if (password !== 'null' && password !== null) {
+    page.form.password = password
+  }
+  if (page.form.account !== '') {
+    page.login()
+  }
+}
+window.accountCallBack = (account) => {
+  if (account !== 'null' && account !== null) {
+    page.form.account = account
+  }
+  if (page.form.password !== '') {
+    page.login()
+  }
+}
+window.passwordtCallBack = (password) => {
+  if (password !== 'null' && password !== null) {
+    page.form.password = password
+  }
+  if (page.form.account !== '') {
+    page.login()
+  }
+}
+let page
 export default {
   name: 'Login',
   data () {
     return {
+      phoneType: '',
       form: {
         account: '',
-        password: '',
-        remeberPass: false
+        password: ''
+        // remeberPass: false
       },
       showPositionValue: false
     }
@@ -51,25 +90,21 @@ export default {
     XButton
   },
   created () {
-    if (this.getCookie('user') && this.getCookie('pswd')) {
-      this.form.account = this.getCookie('user')
-      this.form.password = this.base64decode(this.getCookie('pswd'))
-      this.form.remeberPass = true
-    }
+    page = this
     this.getPhoneInfo()
+  },
+  mounted () {
+
   },
   methods: {
     inputUserName () {
       this.form.password = ''
     },
-    remeberChange (val) {
-      if (!val) {
-        this.delCookie('user')
-        this.delCookie('pswd')
-      }
-    },
     agreeTerms () {
       this.$router.push({name: 'ClauseDetail', query: {protocolName: '中驰车福物流云平台网站注册服务协议', protocolType: 1}})
+    },
+    toRegisterUser () {
+      this.$router.push({name: 'RegisterUser', query: {from: 'login'}})
     },
     // 登录
     login () {
@@ -91,92 +126,94 @@ export default {
       } else {
         LoginAjax.Login({account: this.form.account, password: this.form.password, loginType: 3}).then((response) => {
           if (response.code === 200) {
-            if (this.form.remeberPass) {
-              this.setCookie({name: 'user', value: this.form.account, day: 7}) // 保存帐号到cookie，有效期7天
-              this.setCookie({name: 'pswd', value: this.base64encode(this.form.password), day: 7}) // 保存密码到cookie，有效期7天
+            if (this.getPhoneTypeStr() === 'Android') {
+              if (window.android && window.android.setXXX) {
+                window.android.setXXX('account', this.form.account)
+                window.android.setXXX('password', this.form.password)
+              }
+            } else { // ios
+              if (window.iOSApp && window.iOSApp.setUserAccount) {
+                window.iOSApp.setUserAccount(this.form.account)
+                window.iOSApp.setUserPassword(this.form.password)
+              }
             }
             let token = response.data.token
             sessionStorage.setItem('token', token)
             sessionStorage.setItem('userInfo', JSON.stringify(response.data))
-            this.$vux.toast.show({
-              type: 'success',
-              text: '登录成功！'
-            })
-            MyCenterAjax.queryUserInfo({userId: response.data.userId}).then((response) => {
-              if (response.code === 200) {
-                if (response.data) {
-                  sessionStorage.setItem('driverInfo', JSON.stringify(response.data))
-                }
-              }
-            })
+            // MyCenterAjax.queryUserInfo({userId: response.data.userId}).then((response) => {
+            //   if (response.code === 200) {
+            //     debugger
+            //     if (response.data) {
+            //       sessionStorage.setItem('driverInfo', JSON.stringify(response.data))
+            //     }
+            //   }
+            // })
+            this.$router.push({name: 'Index', query: {showPage: 2}})
             LoginAjax.QueryUserState().then((res) => {
               if (res.code === 200) {
                 if (response.data.firstLogin === 0) {
                   this.$router.push({name: 'FirstChangePwd'})
                 } else {
-                  this.$router.push({name: 'Index'})
+                  if (response.data.companyType === 6) { // 修理厂端
+                    this.$router.push({name: 'Index', query: {showPage: 4}})
+                  } else {
+                    this.$router.push({name: 'Index', query: {showPage: 2}})
+                  }
                 }
-                // if (res.data === 3) {
-                //   if (response.data.firstLogin === 0) {
-                //     this.$router.push({name: 'FirstChangePwd'})
-                //   } else {
-                //     this.$router.push({name: 'Index'})
-                //   }
-                // } else {
-                //   if (response.data.firstLogin === 0) {
-                //     this.$router.push({name: 'FirstChangePwd'})
-                //   } else {
-                //     this.$router.push({name: 'Index'})
-                //   }
-                // }
               }
             })
           } else {
             this.$vux.toast.show({
               type: 'warn',
-              text: response.message
+              text: `${response.message}`
             })
           }
         }).catch((err) => {
           this.$vux.toast.show({
             type: 'warn',
-            text: err.message
+            text: `${err.message}`
           })
           console.clear()
         })
       }
     },
-    isCompatibilityPhone (navigator) {
-      return /iphone/gi.test(navigator.userAgent) && (screen.height === 812 && screen.width === 375)
-    },
     getPhoneInfo () {
-      let app = navigator.appVersion
-      // 根据括号进行分割
-      let left = app.indexOf('(')
-      let right = app.indexOf(')')
-      let str = app.substring(left + 1, right)
-      // console.log(str+'裁剪过后的')
-      let Str = str.split(';')
-      // 手机型号--苹果 iPhone
-      let mobileIphone = Str[0]
-      // 手机型号--安卓
-      let mobileAndroid = Str[2]
-      // 红米手机等特殊型号处理 匹配字符
-      let res = /Android/
-      let reslut = res.test(mobileAndroid)
-      // 根据设备型号判断设备系统
-      if (mobileIphone === 'iPhone') {
-        let isX = this.isCompatibilityPhone(navigator)
-        console.log(isX)
-        console.log('访问设备型号' + mobileIphone + '系统版本' + Str[1].substring(4, 19))
-      } else if (mobileAndroid === 'Linux') {
-        if (reslut) {
-          console.log('访问设备型号' + Str[4].substring(0, 9) + '系统版本' + Str[2])
-        } else {
-          console.log('访问设备型号' + mobileAndroid.substring(0, 9) + '系统版本' + Str[1])
+      if (this.getPhoneTypeStr() === 'Android') {
+        this.getAndroidCache()
+      } else {
+        setTimeout(() => {
+          this.getIosCache()
+        }, 2000)
+      }
+    },
+    // 安卓获取缓存账号密码
+    getAndroidCache () {
+      try {
+        if (window.android) {
+          window.android.getXXX('account')
+          window.android.getXXX('password')
         }
-      } else if (mobileIphone === 'iPad') {
-        console.log('访问设备' + Str[0] + '系统版本' + Str[1].substring(4, 12))
+      } catch (error) {
+        console.log(error)
+        this.$vux.toast.show({
+          type: 'warn',
+          text: `${error}`
+        })
+      }
+    },
+    // ios获取缓存账号密码
+    getIosCache () {
+      try {
+        if (window.iOSApp) {
+          window.iOSApp.getUserAccount()
+          window.iOSApp.getUserPassword()
+        }
+      } catch (error) {
+        console.log(error)
+        this.$vux.toast.show({
+          type: 'warn',
+          text: `${error}`
+        })
       }
     }
   }
@@ -256,6 +293,22 @@ export default {
       span{
         margin-left: 15px;
         .mixin-sc(28px;#333);
+      }
+    }
+    .register-con {
+      height: 60px;
+      width: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      // margin-top: 10px;
+      .register-user {
+        width: 30%;
+        height: 60px;
+        line-height: 60px;
+        font-size: 26px;
+        text-align: right;
+        color: #4d64fd
       }
     }
     .agreeTerms{

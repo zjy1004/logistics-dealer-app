@@ -36,7 +36,7 @@
            <span class="warn">*</span>企业名称
           </div>
           <div class="c-inputWarp">
-            <van-field @keyup.native="inputName()" v-model="registerParam.companyName" placeholder="请输入企业名称" />
+            <van-field  v-model.trim="registerParam.companyName" placeholder="请输入企业名称" />
             <!-- <x-input type="text" v-model="registerParam.companyName" placeholder="请输入企业名称"></x-input> -->
           </div>
           <!-- 营业执照注册号 -->

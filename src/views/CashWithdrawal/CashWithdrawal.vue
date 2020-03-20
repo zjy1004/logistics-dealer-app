@@ -111,14 +111,37 @@
         <p style="text-align:center;">该账户存在银行卡正在进行身份认证是否继续进行认证</p>
       </confirm>
     </div>
+     <!-- 资金账户升级提示 -->
+    <div v-transfer-dom>
+      <confirm v-model="hintUpdateAccount"
+        :cancel-text="'取消'"
+        :confirm-text="'确定'"
+        @on-cancel="onCancelUpdate"
+        @on-confirm="onConfirmUpdate">
+        <p style="text-align:center;">为提升您账户的资金安全及到账时效，驮付宝即将与平安银行进一步合作，升级资金通道，请您按照系统提示步骤进行资金账户升级，感谢您的谅解与配合。</p>
+      </confirm>
+    </div>
+    <update-account-dialog
+      v-if="updateAccountShow"
+      :show="updateAccountShow"
+      :accountData="accountInfo"
+      @confirm-update="confirmUpdate"
+    />
+    <van-dialog
+      v-model="showUpdateSuccess"
+      message="账户升级成功!"
+      :close-on-click-overlay = true
+    >
+    </van-dialog>
   </div>
 </template>
 
 <script>
-import { Tab, Tabs, PullRefresh } from 'vant'
+import { Tab, Tabs, PullRefresh, Dialog } from 'vant'
 import { Confirm, TransferDom } from 'vux'
 import TreasureAjax from '@/api/Treasure/Treasure'
 import CommonAxios from '@/api/Common/CommonAxios'
+import UpdateAccountDialog from './subpage/UpdateAccountDialog'
 
 export default {
   data () {
@@ -131,6 +154,10 @@ export default {
       showWithdrawal: false,
       showAuthConfirm: false,
       isLoading: false,
+      hintUpdateAccount: false, // 账户升级提示
+      updateAccountShow: false, // 升级弹框
+      showUpdateSuccess: false, // 升级成功
+      accountInfo: {},
       totalBalance: '', // 账户余额
       WithdrawalsRecordList: [], // 提现记录
       CollectingMoneyList: [], // 代收货款
@@ -148,6 +175,7 @@ export default {
     this.QueryDealerAppWithdrawCashList(this.flowDealerWithdrawCashParam)
     this.QueryAccountBalance()
     this.queryBankInfo()
+    this.queryNewWalletStatus()
     this.routerFrom = this.$route.query.from
   },
   watch: {
@@ -200,7 +228,7 @@ export default {
       CommonAxios.WalletBankAccount(val).then((res) => {
         if (res.code === 200) {
           this.QueryAccount()
-          this.totalBalance = res.data.totalBalance
+          this.totalBalance = res.data.accountBalanceSum
         }
       })
     },
@@ -243,6 +271,28 @@ export default {
     },
     onConfirmRegister () {
       this.$router.push({name: 'BindCard', query: {from: 'treasure'}})
+    },
+    onCancelUpdate () { // 账户升级-取消弹框
+      this.$router.push({name: 'Waybill'})
+    },
+    onConfirmUpdate () { // 账户升级-确定弹框
+      this.updateAccountShow = true
+    },
+    confirmUpdate () { // 账户升级提交
+      this.updateAccountShow = false
+      this.showUpdateSuccess = true
+    },
+    queryNewWalletStatus () {
+      TreasureAjax.QueryNewWalletStatus().then(res => {
+        if (res.code === 200) {
+          if (res.data.status === 1) {
+            this.hintUpdateAccount = true
+            this.accountInfo = res.data
+            this.accountInfo.openAccountBank = res.data.bankName || ''
+            this.accountInfo.bankName = res.data.bankName || ''
+          }
+        }
+      })
     },
     goToDetail (val) {
       this.$router.push({name: 'CashWithdrawalDetail', query: {transactionId: val}})
@@ -304,7 +354,10 @@ export default {
     Confirm,
     [Tab.name]: Tab,
     [Tabs.name]: Tabs,
-    [PullRefresh.name]: PullRefresh
+    [PullRefresh.name]: PullRefresh,
+    [Dialog.name]: Dialog,
+    UpdateAccountDialog
+
   },
   directives: {
     TransferDom
@@ -487,17 +540,17 @@ export default {
 <style lang="less">
 .CashWithdrawal {
   background: #fff;
-
   .van-tabs--card{
     display: flex;
     flex: 1;
     padding-top: 100px;
     margin-top: 40px;
+    overflow-y: auto;
     .van-tabs__wrap {
-    height: 100px;
-    width: 90%;
-    margin: 0 auto;
-    border-radius:6px;
+      height: 100px;
+      width: 90%;
+      margin: 0 auto;
+      border-radius:6px;
     }
   }
   .van-tab {
@@ -536,6 +589,21 @@ export default {
       font-weight: 400;
       font-size: 28px;
     }
+  }
+}
+.van-dialog {
+  .van-dialog__content {
+    height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+  .van-dialog__message {
+    font-size: 34px;
+    color: #000;
+  }
+  .van-dialog__confirm {
+    color: #4A7FE8;
   }
 }
 .vux-x-dialog{

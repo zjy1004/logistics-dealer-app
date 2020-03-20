@@ -61,7 +61,6 @@ const RegisterLogisticsPayAndBindingCardAjax = {
     let result = Post('/finance/api/finaBankInfo/fundAccountAccountAuth', params)
     return result
   }
-
 }
 
 export default RegisterLogisticsPayAndBindingCardAjax
