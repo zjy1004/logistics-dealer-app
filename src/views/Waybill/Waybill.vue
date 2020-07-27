@@ -478,6 +478,7 @@ export default {
     width: 100%;
     display: flex;
     flex: 1;
+    overflow-y: scroll;
     flex-direction: column;
     position: relative;
     .create-waybill{
